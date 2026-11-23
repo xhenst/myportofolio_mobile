@@ -142,7 +142,7 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 12.0),
                 child: DropdownButtonFormField<String>(
-                  value: _category,
+                  initialValue: _category,
                   decoration: InputDecoration(
                     labelText: "Category Experience",
                     border: OutlineInputBorder(
@@ -304,48 +304,39 @@ class _ExperienceFormPageState extends State<ExperienceFormPage> {
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    Row(
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Radio<bool>(
-                              value: true,
-                              groupValue: _isOngoing,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  _isOngoing = value ?? true;
-                                  if (_isOngoing) {
-                                    _endDate = null;
-                                  }
-                                });
-                              },
-                            ),
-                            const Text("Yes"),
-                          ],
-                        ),
-                        const SizedBox(width: 24.0),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Radio<bool>(
-                              value: false,
-                              groupValue: _isOngoing,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  _isOngoing = value ?? false;
-                                });
-                              },
-                            ),
-                            const Text("No"),
-                          ],
-                        ),
-                      ],
+                    RadioGroup<bool>(
+                      groupValue: _isOngoing,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _isOngoing = value ?? false;
+                          if (_isOngoing) {
+                            _endDate = null;
+                          }
+                        });
+                      },
+                      child: const Row(
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Radio<bool>(value: true),
+                              Text("Yes"),
+                            ],
+                          ),
+                          SizedBox(width: 24.0),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Radio<bool>(value: false),
+                              Text("No"),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
               ),
-
               // Tombol Simpan
               SizedBox(
                 width: double.infinity,

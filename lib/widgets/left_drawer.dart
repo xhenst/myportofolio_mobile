@@ -66,7 +66,7 @@ class LeftDrawer extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.work_outline),
+            leading: const Icon(Icons.add_circle_outline),
             title: const Text('Add Experience'),
             // Navigasi ke halaman tambah experience
             onTap: () {

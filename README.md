@@ -18,7 +18,7 @@ Aplikasi mobile berbasis Flutter untuk mengelola dan menampilkan portofolio prib
 ### Langkah Instalasi
 1. **Clone repositori ini:**
    ```bash
-   git clone <URL_REPOSITORI_KAMU>
+   git clone https://github.com/xhenst/myportofolio_mobile.git
    cd myportofolio_mobile
 
 ```
@@ -54,15 +54,18 @@ flutter run -d chrome
 ## Progres Mingguan
 
 * **Minggu 1 (Tugas 7):**
-* Memisahkan halaman utama (`MyHomePage`) ke dalam berkas `lib/menu.dart` dan mengubahnya menjadi `StatelessWidget`.
-* Menerapkan tema warna global *Digital Lavender* pada `ThemeData` di `lib/main.dart`.
-* Membuat tiga tombol aksi (`ItemCard`: *Lihat Proyek*, *Tambah Proyek*, *Logout*) dengan warna berbeda dan umpan balik `SnackBar` interaktif.
+  * Memisahkan halaman utama (`MyHomePage`) ke dalam berkas `lib/menu.dart` dan mengubahnya menjadi `StatelessWidget`.
+  * Menerapkan tema warna global *Digital Lavender* pada `ThemeData` di `lib/main.dart`.
+  * Membuat tiga tombol aksi (`ItemCard`: *Lihat Proyek*, *Tambah Proyek*, *Logout*) dengan warna berbeda dan umpan balik `SnackBar` interaktif.
 
-
+* **Minggu 2 (Tugas 8):**
+  * Merapikan struktur direktori proyek menjadi `lib/screens/` (`menu.dart`, `project_form.dart`, `experience_form.dart`) dan `lib/widgets/` (`left_drawer.dart`, `menu_card.dart`).
+  * Mengimplementasikan navigasi berbasis *drawer* (`LeftDrawer`) dan kartu aksi pada halaman utama menuju halaman formulir *Project* dan *Experience*.
+  * Membuat halaman formulir baru `ExperienceFormPage` (`lib/screens/experience_form.dart`) dengan 7 atribut lengkap sesuai model *Experience* (termasuk *dropdown*, *date picker*, *radio group*, validasi format URL, dan validasi urutan tanggal) serta ringkasan hasil input dalam `AlertDialog`.
 
 ---
 
-## Tugas 7: Elemen Dasar Flutter
+## Tugas 7
 
 ### 1. Jelaskan apa yang dimaksud dengan *widget tree* pada Flutter dan bagaimana hubungan induk-anak (*parent-child*) bekerja antar-widget!
 
@@ -174,22 +177,89 @@ Sementara itu, kita wajib melakukan **Full Restart** (menghentikan aplikasi lalu
 
 ---
 
+## Tugas 8
+
+### 1. Jelaskan perbedaan antara `Navigator.push()`, `Navigator.pushReplacement()`, dan `Navigator.pop()`. Metode apa yang digunakan untuk membuka formulir dari kartu aksi? Jelaskan juga bagaimana opsi `Home` di drawer membawa pengguna kembali ke halaman utama.
+
+Flutter mengelola perpindahan antar-layar menggunakan struktur data tumpukan (*navigation stack* / LIFO):
+
+* **`Navigator.push()`:** Menambahkan rute (*route*) halaman baru ke puncak tumpukan tanpa menghapus halaman sebelumnya. Halaman lama tetap tersimpan di bawahnya sehingga pengguna dapat kembali menggunakan tombol *Back* bawaan perangkat atau peramban.
+* **`Navigator.pushReplacement()`:** Menggantikan halaman yang sedang aktif di puncak tumpukan dengan halaman baru (halaman lama dihapus dari *stack*). Pengguna tidak dapat kembali ke halaman sebelumnya menggunakan tombol *Back* karena rutenya telah diganti.
+* **`Navigator.pop()`:** Menghapus rute teratas dari tumpukan untuk menutup dialog atau kembali ke halaman tepat di bawahnya.
+
+**Penerapan pada Proyek Ini:**
+
+* **Membuka formulir dari kartu aksi:** Menggunakan **`Navigator.push()`** di dalam `ItemCard` (`lib/widgets/menu_card.dart`). Dengan metode ini, `MyHomePage` tetap tersimpan di bawah `ExperienceFormPage` atau `ProjectFormPage` pada *navigation stack*, sehingga pengguna dapat kembali ke halaman utama menggunakan tombol *Back* bawaan perangkat/peramban.
+* **Opsi `Home` di drawer:** Menggunakan **`Navigator.pushReplacement()`** di dalam `LeftDrawer` (`lib/widgets/left_drawer.dart`) untuk mengganti rute formulir aktif dengan `MyHomePage`. Hal ini mencegah penumpukan rute berulang di dalam *stack* saat pengguna berpindah menu lewat drawer, sekaligus memastikan pengguna selalu dapat kembali ke halaman utama dari halaman formulir mana pun (termasuk saat diuji di Chrome).
+
+---
+
+### 2. Bagaimana susunan `Scaffold`, `AppBar`, dan `Drawer` membantu menjaga struktur halaman tetap konsisten? Berikan satu contoh penggunaan warna tema portofolio di lebih dari satu halaman.
+
+* **Peran Struktur Halaman:** `Scaffold` menyediakan kerangka tata letak standar Material Design pada setiap halaman, `AppBar` menampilkan bilah header yang seragam beserta ikon menu (*hamburger*) secara otomatis, dan pemasangan komponen `LeftDrawer` yang sama pada properti `drawer` di setiap `Scaffold` (`MyHomePage`, `ProjectFormPage`, dan `ExperienceFormPage`) memastikan navigasi global selalu tersedia di lokasi dan tampilan yang konsisten.
+* **Contoh Penggunaan Warna Tema di Lebih dari Satu Halaman:** Seluruh halaman mengambil palet warna terpusat melalui `Theme.of(context).colorScheme` (*Digital Lavender*, dengan `primary` `#34304D` dan `onPrimary` putih) yang didefinisikan di `main.dart`. Warna `colorScheme.primary` digunakan secara konsisten sebagai warna latar belakang `AppBar` di `MyHomePage`, `ProjectFormPage`, dan `ExperienceFormPage`, latar belakang `DrawerHeader` pada `LeftDrawer`, serta warna latar tombol utama **Simpan** pada halaman formulir.
+
+---
+
+### 3. Mengapa tata letak tersebut dipilih untuk formulir? Jelaskan peran widget pengatur jarak dan widget penggulir ketika ruang layar terbatas.
+
+* **Alasan Pemilihan Tata Letak:** Formulir disusun secara vertikal menggunakan `Column` (`CrossAxisAlignment.start`) agar urutan pembacaan dari label, kolom input, pesan kesalahan validasi, hingga tombol **Simpan** berjalan alami dari atas ke bawah.
+* **Peran Widget Pengatur Jarak (`Padding` & `SizedBox`):** Memberikan ruang pemisah antar-komponen input (seperti `Padding(padding: EdgeInsets.only(bottom: 12.0))` dan `SizedBox`) sehingga tiap kolom tidak saling menempel, pesan kesalahan di bawah field terbaca jelas, dan area sentuh mudah dijangkau pengguna.
+* **Peran Widget Penggulir (`SingleChildScrollView`):** Ketika aplikasi dibuka pada layar ponsel berukuran sempit atau ketika papan ketik virtual (*on-screen keyboard*) muncul dan mengurangi tinggi layar yang tersedia, tinggi isi formulir dapat melebihi area layar. `SingleChildScrollView` memungkinkan seluruh konten formulir digulir secara vertikal sehingga mencegah *RenderFlex overflow* dan memastikan field terbawah serta tombol **Simpan** tetap dapat dijangkau.
+
+---
+
+### 4. Apa peran `GlobalKey<FormState>`, `validator`, dan `validate()` saat tombol `Simpan` ditekan? Berikan satu contoh nilai yang ditolak oleh validasi dan jelaskan mengapa memilih jenis input atau papan ketik saja belum cukup.
+
+* **`GlobalKey<FormState>`:** Berperan sebagai kunci unik yang memegang referensi langsung ke *state* internal widget `Form` (`_formKey`), sehingga seluruh status validasi widget input di dalamnya dapat dikontrol dari luar widget input tersebut (seperti dari tombol **Simpan**).
+* **`validator`:** Fungsi pada setiap field input (`TextFormField` dan `FormField<DateTime>`) yang memeriksa nilai masukan terhadap aturan model dan mengembalikan pesan kesalahan berupa `String` jika tidak memenuhi syarat, atau `null` jika valid.
+* **`validate()`:** Metode pada `FormState` (`_formKey.currentState!.validate()`) yang dipanggil ketika tombol **Simpan** ditekan. Metode ini menjalankan seluruh fungsi `validator` pada setiap field secara bersamaan, menampilkan pesan error pada kolom yang gagal, dan hanya mengembalikan `true` (sehingga `showDialog()` dijalankan) apabila seluruh input dinyatakan valid.
+
+**Contoh Nilai yang Ditolak & Mengapa Tipe Input/Keyboard Saja Belum Cukup:**
+
+* **Contoh Nilai yang Ditolak:** Memasukkan `"   "` (hanya berisi spasi) pada **Nama Experience**, memasukkan `"portofolio-kayla.com"` (tanpa skema `http://` atau `https://`) pada **URL Thumbnail**, atau memilih **Waktu Berakhir** yang tanggalnya lebih awal daripada **Waktu Dimulai**.
+* **Alasan Jenis Input/Keyboard Saja Belum Cukup:** Mengatur `keyboardType: TextInputType.url` hanya menyesuaikan tampilan tombol pada papan ketik virtual untuk memudahkan pengetikan, tetapi **tidak** membatasi isi data yang masuk—pengguna tetap bisa membiarkan kolom kosong, memasukkan spasi saja, atau menempel (*paste*) teks dengan format yang keliru. Oleh karena itu, fungsi `validator` di level aplikasi tetap diperlukan untuk memastikan validitas data sebelum ditampilkan atau diproses lebih lanjut.
+
+---
 ## AI Disclosure
 
-### 1. Tools yang Digunakan
+### Tugas 7: Elemen Dasar Flutter
+
+#### 1. Tools yang Digunakan
 * **Google Gemini:** Digunakan sebagai alat bantu verifikasi kesesuaian implementasi terhadap *checklist* tugas, pengecekan *best practice* sintaks Dart/Flutter, serta validasi draf dokumentasi.
 
-### 2. Bagian Spesifik yang Dibantu & Strategi Prompting
+#### 2. Bagian Spesifik yang Dibantu & Strategi Prompting
 * **Strategi Prompting:** Menggunakan pendekatan *verification-first*—saya menulis implementasi kode (`main.dart` dan `menu.dart`) serta menentukan palet warna secara mandiri terlebih dahulu, lalu menggunakan AI untuk memvalidasi apakah kode sudah memenuhi seluruh *checklist* dan mengecek potensi perbaikan kualitas kode.
 * **Bagian yang Dibantu:**
   * Verifikasi struktur *refactoring* `MyHomePage` menjadi `StatelessWidget` pada `lib/menu.dart` agar sesuai dengan spesifikasi tugas.
   * Diskusi opsi penerapan palet warna pilihan saya (*Digital Lavender*) ke dalam `ThemeData` dan pengecekan kontras warna teks pada tombol kartu.
   * Pengecekan kelengkapan poin jawaban konseptual dan penyusunan format dokumentasi `README.md`.
 
-### 3. Log Prompting (Tugas 7)
+#### 3. Log Prompting (Tugas 7)
 1. **Pengecekan Implementasi Mandiri:** Mengirimkan kode `lib/menu.dart` yang sudah saya tulis untuk memverifikasi kesesuaiannya dengan *checklist* tugas.
 2. **Validasi Kustomisasi Warna:** Melampirkan referensi palet warna pilihan saya (*Digital Lavender*) dan mengecek cara terbaik menerapkannya pada `ItemCard` serta `ThemeData`.
 3. **Review Jawaban & Dokumentasi:** Meminta tinjauan ulang terhadap draf jawaban pertanyaan konseptual Flutter dan struktur `README.md` sebelum dilakukan *commit*.
 
-### 4. Analisis Kritis Keterbatasan AI & Perbaikan Manual
+#### 4. Analisis Kritis Keterbatasan AI & Perbaikan Manual
 * **Keputusan Arsitektur Pengelolaan Warna:** AI sempat menyarankan pembuatan *class* konstanta warna terpisah (`AppColors`) di dalam `menu.dart` untuk menyimpan kode hex. Saya tidak menggunakan saran tersebut dan memilih mengelola warna secara terpusat melalui `ColorScheme` di `main.dart` lalu memanggilnya via `Theme.of(context)` agar lebih sesuai dengan standar Flutter dan mudah dipakai ulang pada tugas-tugas berikutnya.
+
+---
+
+### Tugas 8: Navigasi, Tata Letak, dan Formulir di Flutter
+
+#### 1. Tools yang Digunakan
+* **Google Gemini:** Digunakan sebagai alat bantu verifikasi kesesuaian implementasi terhadap *checklist* tugas, pengecekan hasil analisis statis (`flutter analyze`) untuk API Flutter terbaru, serta review jawaban reflektif.
+
+#### 2. Bagian Spesifik yang Dibantu & Strategi Prompting
+* **Strategi Prompting:** Menggunakan pendekatan *iterative verification*—saya merancang atribut form berdasarkan model aplikasi web Django yang sudah dibuat sebelumnya (`MyPortfolio`), mengimplementasikan struktur navigasi serta layar formulir, lalu menggunakan AI untuk mengecek *edge cases* validasi dan kebersihan kode.
+* **Bagian yang Dibantu:**
+  * Penyesuaian 7 atribut `ExperienceFormPage` (`Nama Experience`, `Deskripsi Experience`, `Category Experience`, `URL Thumbnail`, `Waktu Dimulai`, `Waktu Berakhir`, dan `On-going`) beserta aturan validasi URL (`Uri.tryParse`) dan urutan tanggal.
+  * Peninjauan alur navigasi antara `LeftDrawer`, `ItemCard` (`menu_card.dart`), dan `ExperienceFormPage`, serta review jawaban pertanyaan reflektif Tugas 8.
+
+#### 3. Log Prompting (Tugas 8)
+1. **Penyesuaian Model & Validasi Form:** Melampirkan rancangan atribut form *Experience* dari aplikasi web untuk menyesuaikan field input, *date picker*, validasi URL, dan urutan tanggal di `lib/screens/experience_form.dart`.
+2. **Integrasi Navigasi & Drawer:** Mengecek penambahan rute menuju `ExperienceFormPage` di `lib/widgets/left_drawer.dart` serta penyesuaian path *import* setelah pemindahan berkas ke `lib/screens/`.
+
+#### 4. Analisis Kritis Keterbatasan AI & Perbaikan Manual
+* **Penyesuaian Widget `InputDecorator`:** Pada draf awal form, AI sempat menempatkan properti `enabled` langsung pada widget `InputDecorator` yang menimbulkan error kompilasi karena properti tersebut seharusnya berada di dalam `InputDecoration`. Saya memperbaiki penempatannya agar field *Waktu Berakhir* nonaktif secara visual saat status *On-going* dipilih.
+* **Generalisasi Widget Kartu (`menu_card.dart`):** AI awalnya menyarankan pembuatan berkas kartu terpisah (`experience_card.dart`) khusus untuk menu *Experience*. Saya memutuskan untuk tidak memisahkannya dan menggabungkan logika navigasi ke dalam satu widget `ItemCard` di `lib/widgets/menu_card.dart` agar menghindari duplikasi kode (*DRY*).
