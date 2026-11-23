@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/widgets/left_drawer.dart';
-import 'package:myportofolio_mobile/widgets/project_card.dart';
+import 'package:myportofolio_mobile/widgets/menu_card.dart';
 
 class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key});
@@ -15,7 +15,9 @@ class MyHomePage extends StatelessWidget {
 
     final List<ItemHomepage> items = [
       ItemHomepage("Lihat Proyek", Icons.folder, colorScheme.primary),
+      ItemHomepage("Lihat Experience", Icons.folder, colorScheme.primary),
       ItemHomepage("Tambah Proyek", Icons.add_circle, colorScheme.secondary),
+      ItemHomepage("Tambah Experience", Icons.add_circle, colorScheme.secondary),
       ItemHomepage("Logout", Icons.logout, colorScheme.tertiary),
     ];
 
