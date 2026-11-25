@@ -1,30 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
+import 'package:myportofolio_mobile/services/api_client.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp(apiClient: ApiClient()));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({required this.apiClient, super.key});
+
+  final ApiClient apiClient;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MyPortfolio',
-      theme: ThemeData(
-        scaffoldBackgroundColor: const Color(0xFFF4F1FA), // Lavender White
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF34304D), // Deep Plum
-          primary: const Color(0xFF34304D), // Deep Plum[cite: 1]
-          secondary: const Color(0xFF8B78C6), // Purple[cite: 1]
-          tertiary: const Color(0xFFE5A6A6), // Dusty Pink[cite: 1]
-          primaryContainer: const Color(0xFFC5B8E8), // Soft Lavender[cite: 1]
-          surface: const Color(0xFFF4F1FA), // Lavender White[cite: 1]
+    return MultiProvider(
+      providers: [
+        Provider.value(value: apiClient),
+        ChangeNotifierProvider(
+          create: (_) => AuthState(apiClient),
         ),
-        useMaterial3: true,
+      ],
+      child: MaterialApp(
+        title: 'MyPortfolio',
+        theme: ThemeData(
+          useMaterial3: true,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF34304D),
+            primary: const Color(0xFF34304D),
+            secondary: const Color(0xFF7B61FF),
+            tertiary: const Color(0xFFE6E1F9),
+          ),
+        ),
+        home: const MyHomePage(),
       ),
-      home: const MyHomePage(),
     );
   }
 }
