@@ -3,6 +3,9 @@ import 'package:myportofolio_mobile/screens/experience_form.dart';
 import 'package:myportofolio_mobile/screens/menu.dart';
 import 'package:myportofolio_mobile/screens/project_form.dart';
 import 'package:myportofolio_mobile/screens/project_list_screen.dart';
+import 'package:myportofolio_mobile/services/auth_state.dart';
+import 'package:myportofolio_mobile/widgets/auth_guard.dart';
+import 'package:provider/provider.dart';
 
 class ItemCard extends StatelessWidget {
   final ItemHomepage item;
@@ -19,39 +22,55 @@ class ItemCard extends StatelessWidget {
       color: item.color,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
-        onTap: () {
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(
-              SnackBar(
-                backgroundColor: colorScheme.primary,
-                content: Text(
-                  "Kamu telah menekan tombol ${item.name}!",
-                  style: TextStyle(color: colorScheme.surface),
-                ),
-              ),
-            );
+        onTap: () async {
+          final messenger = ScaffoldMessenger.of(context);
+          final navigator = Navigator.of(context);
+
           if (item.name == "Lihat Proyek") {
-            Navigator.push(
-              context,
+            navigator.push(
               MaterialPageRoute(
                 builder: (context) => const ProjectListScreen(),
               ),
             );
           } else if (item.name == "Tambah Proyek") {
-            Navigator.push(
-              context,
+            final ok = await ensureLoggedIn(context);
+            if (!ok) return;
+            navigator.push(
               MaterialPageRoute(
                 builder: (context) => const ProjectFormPage(),
               ),
             );
           } else if (item.name == "Tambah Experience") {
-            Navigator.push(
-              context,
+            navigator.push(
               MaterialPageRoute(
                 builder: (context) => const ExperienceFormPage(),
               ),
             );
+          } else if (item.name == "Logout") {
+            await context.read<AuthState>().logout();
+            messenger
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  backgroundColor: colorScheme.primary,
+                  content: Text(
+                    "Berhasil logout!",
+                    style: TextStyle(color: colorScheme.surface),
+                  ),
+                ),
+              );
+          } else {
+            messenger
+              ..hideCurrentSnackBar()
+              ..showSnackBar(
+                SnackBar(
+                  backgroundColor: colorScheme.primary,
+                  content: Text(
+                    "Kamu telah menekan tombol ${item.name}!",
+                    style: TextStyle(color: colorScheme.surface),
+                  ),
+                ),
+              );
           }
         },
         child: Container(

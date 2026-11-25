@@ -9,17 +9,18 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({required this.apiClient, super.key});
+  const MyApp({this.apiClient, super.key});
 
-  final ApiClient apiClient;
+  final ApiClient? apiClient;
 
   @override
   Widget build(BuildContext context) {
+    final client = apiClient ?? ApiClient();
     return MultiProvider(
       providers: [
-        Provider.value(value: apiClient),
+        Provider<ApiClient>.value(value: client),
         ChangeNotifierProvider(
-          create: (_) => AuthState(apiClient),
+          create: (_) => AuthState(client),
         ),
       ],
       child: MaterialApp(
